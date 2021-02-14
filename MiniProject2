@@ -23,23 +23,17 @@ tweets.shape
 
 tweets.head()
 
-tweets["tweet_text"][3]
-
 import seaborn as sns
 
 sns.countplot(x='sentiment_label', data=tweets)
 
 def preprocess_text(sen):
-    # Removing html tags
     sentence = remove_tags(sen)
 
-    # Remove punctuations and numbers
     sentence = re.sub('[^a-zA-Z]', ' ', sentence)
 
-    # Single character removal
     sentence = re.sub(r"\s+[a-zA-Z]\s+", ' ', sentence)
 
-    # Removing multiple spaces
     sentence = re.sub(r'\s+', ' ', sentence)
 
     return sentence
@@ -54,8 +48,6 @@ sentences = list(tweets['tweet_text'])
 for sen in sentences:
     X.append(preprocess_text(sen))
 
-X[3]
-
 y = tweets['sentiment_label']
 
 y = np.array(list(map(lambda x: 4 if x=="positive" else 0, y)))
@@ -68,7 +60,6 @@ tokenizer.fit_on_texts(X_train)
 X_train = tokenizer.texts_to_sequences(X_train)
 X_test = tokenizer.texts_to_sequences(X_test)
 
-# Adding 1 because of reserved 0 index
 vocab_size = len(tokenizer.word_index) + 1
 
 maxlen = 100
@@ -95,7 +86,8 @@ for word, index in tokenizer.word_index.items():
     embedding_vector = embeddings_dictionary.get(word)
     if embedding_vector is not None:
         embedding_matrix[index] = embedding_vector
-
+        
+#CNN
 model = Sequential()
 
 embedding_layer = Embedding(vocab_size, 200, weights=[embedding_matrix], input_length=maxlen , trainable=False)
@@ -135,6 +127,7 @@ plt.xlabel('epoch')
 plt.legend(['train','test'], loc = 'upper left')
 plt.show()
 
+#RNN
 model = Sequential()
 embedding_layer = Embedding(vocab_size, 200, weights=[embedding_matrix], input_length=maxlen , trainable=False)
 model.add(embedding_layer)
